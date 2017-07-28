@@ -1,0 +1,45 @@
+ {%extends 'index.html'%}
+ {% block content %}
+ {% load staticfiles %}
+
+ {% block massages %}
+    <div id="chat-body" class="panel panel-default">
+        <div class="panel-heading">Chat Box
+
+        {% if not request.user.is_authenticated %}
+        <span style="float:right;margin-right:10px">  <a href="{% url 'login' %}">login</a>  </span><span style="float:right;margin-right:10px">  <a href="{% url 'singup' %}">singup  </a>  </span>
+        {% else %}
+        <span style="float:right;margin-right:10px">  <a href="{% url 'logout' %}">logout  </a>  </span> 
+        {%endif%}
+        <div id="msg-list-div" class="panel-body">
+            <ul id="msg-list" class="list-group">
+    {% if request.user.is_authenticated  %}
+                {% for i in msg %}
+                    {% if i.user == request.user %}
+                        <li class="text-right list-group-item">{{ i.message }} |  {{i.created|timesince}} | {{i.user}}   </li>
+                    {% else %}
+                        <li class="text-left list-group-item"> {{i.user}} | {{i.created|timesince}} | {{ i.message }}</li>
+                    {% endif %}
+                {% empty %}
+                    <li class="text-right list-group-item">No messages yet!</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% else %}
+    <p>you shod log in first</p>
+{% endif %}
+{% endblock massages %}
+{% if request.user.is_authenticated %}
+	
+{% load crispy_forms_tags  %}
+	<form action="" method="post"  class="col-sm-6 col-sm-offset-3">
+		{%csrf_token%}
+		{{form|crispy}}
+		<input class="btn btn-default"  type="submit" value="Send"/>
+	</form>
+ {%else%}
+        <p>you must login to chat</p>
+{% endif %}
+ <script src="{% static 'js/plugin.js'%}"></script>
+{% endblock content %}
